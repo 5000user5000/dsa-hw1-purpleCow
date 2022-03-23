@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAXSIZE 256
+//usb unit
+typedef struct usb
+{
+    struct usb *pre;
+    struct usb *nxt;
+    int group;
+    int tag;
+};
+
+//bathroom unit
+typedef struct 
+{
+    struct usb *head;
+    struct usb *tail;
+    int status;
+}Toilet;
+
+void freeUsb(struct usb *trash)
+{
+    free(trash->nxt);
+    free(trash->pre);
+    trash->tag = 0;
+    free(trash);
+    
+}
+
+void withoutFree()
+{
+    printf("========================\n       without freeing the memory        \n========================\n");
+    struct usb *a, *b, *c;
+    // a = (usb *)malloc(sizeof(usb));
+    // b = (usb *)malloc(sizeof(usb));
+    // c = (usb *)malloc(sizeof(usb));
+    
+    a = malloc(sizeof(struct usb));
+    b = malloc(sizeof(struct usb));
+    c = malloc(sizeof(struct usb));
+
+    //assign value
+    a->pre = NULL;
+    a->nxt = b;
+    b->pre = a;
+    b->nxt = c;
+    c->pre = b; 
+    c->nxt = NULL;
+    a->tag = 0;
+    b->tag = 1;
+    c->tag = 2;
+
+    //print out original linked list
+    struct usb *it = a;
+    do
+    {
+        printf("%d: %d\n", it, it->tag);
+        it = it->nxt;
+    }while (it != NULL);
+
+    
+    //temporary pointer
+    struct usb *temp;
+    temp = malloc(sizeof(struct usb));
+    temp->nxt = malloc(sizeof(struct usb));
+    temp->pre = malloc(sizeof(struct usb));
+    
+
+    //copy c to temp 
+    memcpy(&temp, &c, sizeof(c));
+
+    printf("temp nxt: %d\n", temp->nxt);
+    printf("temp pre: %d\n", temp->pre);
+    printf("temp tag: %d\n", temp->tag);
+    
+    // freeUsb(temp);
+    printf("freed temp nxt: %d\n", temp->nxt);
+    printf("freed temp pre: %d\n", temp->pre);
+    printf("freed temp tag: %d\n", temp->tag);
+    
+    // print out linked list
+    it = a;
+    do
+    {
+        printf("%d: %d\n", it, it->tag);
+        it = it->nxt;
+        printf("    next it: %d \n", it);
+    }while (it != NULL);
+}
+
+void freeMem()
+{
+    printf("========================\n       free mem after using memcpy        \n========================\n");
+    struct usb *a, *b, *c;
+    // a = (usb *)malloc(sizeof(usb));
+    // b = (usb *)malloc(sizeof(usb));
+    // c = (usb *)malloc(sizeof(usb));
+    
+    a = malloc(sizeof(struct usb));
+    b = malloc(sizeof(struct usb));
+    c = malloc(sizeof(struct usb));
+
+    //assign value
+    a->pre = NULL;
+    a->nxt = b;
+    b->pre = a;
+    b->nxt = c;
+    c->pre = b; 
+    c->nxt = NULL;
+    a->tag = 0;
+    b->tag = 1;
+    c->tag = 2;
+
+    //print out original linked list
+    struct usb *it = a;
+    do
+    {
+        printf("%d: %d\n", it, it->tag);
+        it = it->nxt;
+    }while (it != NULL);
+
+    
+    //temporary pointer
+    struct usb *temp;
+    temp = malloc(sizeof(struct usb));
+    temp->nxt = malloc(sizeof(struct usb));
+    temp->pre = malloc(sizeof(struct usb));
+    
+
+    //copy c to temp 
+    memcpy(&temp, &c, sizeof(c));
+
+    printf("temp nxt: %d\n", temp->nxt);
+    printf("temp pre: %d\n", temp->pre);
+    printf("temp tag: %d\n", temp->tag);
+    // temp->nxt = temp->pre = NULL;
+    
+    freeUsb(temp);
+    printf("freed temp nxt: %d\n", temp->nxt);
+    printf("freed temp pre: %d\n", temp->pre);
+    printf("freed temp tag: %d\n", temp->tag);
+    
+    // print out linked list
+    it = a;
+    do
+    {
+        printf("%d: %d\n", it, it->tag);
+        it = it->nxt;
+        printf("    next it: %d \n", it);
+    }while (it != NULL);
+}
+
+int main(void)
+{
+    //using memcpy(&pointer1, &pointer, size) will give right copied value, 
+    //but after freeing the pointer, the memory will changed to b's address. 
+    //and also will change the original linked list.
+    freeMem();
+    
+    // using operator assignment (temp = c)
+    // the value is not copied
+    // but the original list is saved
+    withoutFree();
+
+    //function for freeing the node is reference from gnu.org
+    //https://www.gnu.org/software/libc/manual/html_node/Freeing-after-Malloc.html?fbclid=IwAR0saM56k85cubdjyY8cOKZ4AUJxSEseJIyDAwF9LCrBneTq_njf3F43_bA
+
+
+    return 0;
