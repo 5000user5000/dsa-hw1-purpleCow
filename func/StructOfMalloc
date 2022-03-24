@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct usb
+{
+    struct usb *pre;
+    struct usb *nxt;
+    int group;
+    int tag;
+};
+
+//bathroom unit
+typedef struct 
+{
+    struct usb *head;
+    struct usb *tail;
+    int status;
+}Toilet;
+
+int main()
+{
+   
+    struct usb *temp;//要用pointer指向記憶體
+    Toilet *toilet;//名字放後面似乎就能省略struct,是的我把usb也測試過可以如此,只是後面不能用struct usb 只用usb
+    
+    temp = malloc(sizeof(struct usb));//必須先malloc才能存值,不然什麼都沒有,且malloc賦值對象只為地址
+    temp->tag = 15;
+    
+    toilet = malloc(sizeof(Toilet));//toilet也要
+    //toilet->head = malloc(sizeof(struct usb)); 似乎可省略,不影響功能,只要一開始的有malloc就好(為何nxt要用,我認為是null可指向記憶體,但記憶體指向null會出錯)
+    toilet->head = temp;//null 指向這記憶體
+    
+    temp->nxt = malloc(sizeof(struct usb));//果然要先malloc,先騰出位置,不然temp就只是null而非nxt的address
+    temp = temp->nxt;
+    //temp = malloc(sizeof(struct usb));//如果沒用,什麼都沒打印,而用了會打印0
+    
+    
+    
+    if(temp->nxt ==NULL)printf("nothing \n");//沒分配記憶體,nxt本就指向NULL
+    printf("%d \n",temp->tag);//記憶體指向值,而非temp.tag
+    printf("%d opps\n",toilet->head->tag);
+    if(toilet->head->nxt==NULL)printf("nothing2 \n");//明明toilet head接上了tag15的usb,那為何不能用nxt->原因是temp->nxt沒先malloc
+    printf("%d opps\n",toilet->head->nxt->tag);
+
+    return 0;
+}
